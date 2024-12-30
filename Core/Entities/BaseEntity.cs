@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Core.Entities
+{
+    public class BaseEntity
+    {
+        // EF => 名稱id 就是PK
+        public int Id { get; set; }
+    }
+}

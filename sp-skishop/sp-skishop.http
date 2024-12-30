@@ -1,0 +1,6 @@
+@sp_skishop_HostAddress = http://localhost:5083
+
+GET {{sp_skishop_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
