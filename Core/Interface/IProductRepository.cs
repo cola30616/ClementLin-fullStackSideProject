@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Core.Interface
 {
+    
     public interface IProductRepository
     {
         // Ireadonlylist 只是表達不會修改該類別 (也可以使用IEnumerable)
