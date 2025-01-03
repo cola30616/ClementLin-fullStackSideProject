@@ -1,6 +1,7 @@
 using Core.Interface;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using sp_skishop.MiddleWare;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,9 @@ builder.Services.AddDbContext<StoreContext>(opt =>
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 // 因為使用generic 無法定義型別，所以要用typeof 關鍵字
-builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+// 新增cors 服務
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -29,9 +32,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
+
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200","https://localhost:4200"));
 app.UseAuthorization();
 
 app.MapControllers();
