@@ -1,7 +1,9 @@
 using Core.Interface;
 using Infrastructure.Data;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using sp_skishop.MiddleWare;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,15 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 // 新增cors 服務
 builder.Services.AddCors();
+// 設定redis
+builder.Services.AddSingleton<IConnectionMultiplexer>(config =>
+{
+    var connString = builder.Configuration.GetConnectionString("Redis") ?? throw new Exception("cannnot get redis connection string");
+    var configuration = ConfigurationOptions.Parse(connString, true);
+    return ConnectionMultiplexer.Connect(configuration);
+});
+// 註冊購物車的service(因為使用redis，跟repo 不一樣~)
+builder.Services.AddSingleton<ICartService, CartService>();
 
 var app = builder.Build();
 
