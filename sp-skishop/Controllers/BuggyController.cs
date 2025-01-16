@@ -1,6 +1,8 @@
 ﻿using Core.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using sp_skishop.DTOs;
+using System.Security.Claims;
 
 namespace sp_skishop.Controllers
 {
@@ -36,6 +38,16 @@ namespace sp_skishop.Controllers
         public IActionResult GetValidationError(CreateProductDto product)
         {
             return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("secret")]
+        public IActionResult GetResult()
+        {
+            var name = User.FindFirst(ClaimTypes.Name)?.Value;
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return Ok("Hello" + name + "with id" + id);
         }
     }
 }

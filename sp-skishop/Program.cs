@@ -1,3 +1,4 @@
+using Core.Entities;
 using Core.Interface;
 using Infrastructure.Data;
 using Infrastructure.Services;
@@ -32,6 +33,10 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(config =>
     var configuration = ConfigurationOptions.Parse(connString, true);
     return ConnectionMultiplexer.Connect(configuration);
 });
+// 身分驗證設定
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityApiEndpoints<AppUser>().AddEntityFrameworkStores<StoreContext>();
+
 // 註冊購物車的service(因為使用redis，跟repo 不一樣~)
 builder.Services.AddSingleton<ICartService, CartService>();
 
@@ -47,10 +52,12 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200","https://localhost:4200"));
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200","https://localhost:4200"));
 app.UseAuthorization();
 
 app.MapControllers();
+// 身分驗證設定 MapGrroup (網址加上api/) // api/login
+app.MapGroup("api").MapIdentityApi<AppUser>();
 
 // 這段是seeding data
 try
